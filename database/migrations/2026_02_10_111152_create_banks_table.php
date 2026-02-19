@@ -101,10 +101,10 @@ return new class extends Migration
             $table->string('card_name');
             $table->string('card_number');
             $table->string('card_cvv');
-            $table->enum('type', ['Visa', 'Mastercard', 'Verve', 'American Express', 'Discover']);
+            $table->enum('type', ['Visa', 'Mastercard', 'American Express', 'Discover']);
             $table->date('expiry_date');
-            $table->date('spending_limit');
-            $table->date('purpose');
+            $table->decimal('spending_limit');
+            $table->string('purpose');
             $table->enum('status', ['active', 'blocked', 'pending', 'expired'])->default('active');
             $table->boolean('default_card')->default(false);
             $table->timestamps();

@@ -80,13 +80,28 @@
                         class="flex-1 flex flex-col gap-8 bg-white p-6 md:p-10 rounded-xl shadow-sm border border-[#dcdde4]">
                         <form method="POST" action="{{ route('user.create-card') }}">
                             @csrf
+                            {{-- session messages --}}
+                            @if (session('success'))
+                                <p class="text-green-600 text-center font-medium">{{ session('success') }}</p>
+                            @endif
+                            @if ($errors->any())
+                                <div class="bg-red-100 dark:bg-red-900/30 p-4 rounded-xl">
+                                    <ul class="list-disc pl-5 text-red-700 dark:text-red-300">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
                             <!-- Section: Card Purpose -->
                             <section>
                                 <h3 class="text-lg font-bold text-[#121217] mb-4">What's this card for?</h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <!-- Option 1 -->
                                     <label class="relative cursor-pointer group">
-                                        <input checked="" class="peer sr-only" name="purpose" type="radio" />
+                                        <input checked="" class="peer sr-only" name="purpose" type="radio"
+                                            value="Subscription" />
                                         <div
                                             class="flex flex-col items-start p-4 rounded-xl border-2 border-[#dcdde4] bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
                                             <span class="material-symbols-outlined text-primary mb-2">sync</span>
@@ -103,7 +118,8 @@
                                     </label>
                                     <!-- Option 2 -->
                                     <label class="relative cursor-pointer group">
-                                        <input class="peer sr-only" name="purpose" type="radio" />
+                                        <input class="peer sr-only" name="purpose" type="radio"
+                                            value="One-time use" />
                                         <div
                                             class="flex flex-col items-start p-4 rounded-xl border-2 border-[#dcdde4] bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
                                             <span
@@ -121,7 +137,7 @@
                                     </label>
                                     <!-- Option 3 -->
                                     <label class="relative cursor-pointer group">
-                                        <input class="peer sr-only" name="purpose" type="radio" />
+                                        <input class="peer sr-only" name="purpose" type="radio" value="General" />
                                         <div
                                             class="flex flex-col items-start p-4 rounded-xl border-2 border-[#dcdde4] bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
                                             <span class="material-symbols-outlined text-primary mb-2">payments</span>
@@ -145,7 +161,7 @@
                                     <input
                                         class="w-full rounded-xl border-[#dcdde4] focus:border-primary focus:ring-1 focus:ring-primary h-14 px-4 text-base transition-colors"
                                         placeholder="e.g. My Monthly Bills" type="text" name="card_name"
-                                        value="New Virtual Card" />
+                                        value="{{ $user->first_name }} {{ $user->last_name }}" />
                                 </div>
                                 <div class="flex flex-col gap-2">
                                     <label class="text-base font-medium text-[#121217]">Card Type</label>
@@ -154,7 +170,7 @@
                                         id="card_type" name="card_type">
                                         <option value="" selected disabled>Choose Card Type</option>
                                         <option value="Visa">Visa</option>
-                                        <option value="Master card">Master Card</option>
+                                        <option value="Mastercard">Mastercard</option>
                                         <option value="American Express">American Express</option>
                                         <option value="Discover">Discover</option>
                                     </select>
@@ -177,9 +193,9 @@
                                             class="w-full rounded-xl border-[#dcdde4] focus:border-primary focus:ring-1 focus:ring-primary h-14 pl-8 pr-4 text-base transition-colors"
                                             placeholder="0.00" type="number" name="spending_limit" />
                                         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
-                                            <button
+                                            <button type="button"
                                                 class="px-3 py-1 bg-background-light rounded-lg text-xs font-bold text-primary border border-primary/20">Monthly</button>
-                                            <button
+                                            <button type="button"
                                                 class="px-3 py-1 bg-white rounded-lg text-xs font-bold text-[#666985] border border-[#dcdde4]">Total</button>
                                         </div>
                                     </div>
@@ -191,7 +207,8 @@
                             <!-- CTA -->
                             <div class="pt-4">
                                 <button
-                                    class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-opacity-90 transition-all shadow-lg flex items-center justify-center gap-2">
+                                    class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-opacity-90 transition-all shadow-lg flex items-center justify-center gap-2"
+                                    type="submit">
                                     <span>Create Virtual Card</span>
                                     <span class="material-symbols-outlined">arrow_forward</span>
                                 </button>
@@ -361,7 +378,7 @@
 
                 // Form Expiry
                 if (expiryDate) {
-                    expiryDate.innerHTML = expiry;
+                    expiryDate.value = expiry;
                 }
             }
             setExpiryDate();
@@ -377,7 +394,7 @@
                     cardTypeName.innerHTML = 'Visa® Virtual';
                     cardPreview.style.background = 'linear-gradient(135deg, #1A1F71 0%, #1A1F71 60%, #F7B600 100%)';
 
-                } else if (selectedType === 'Master card') {
+                } else if (selectedType === 'Mastercard') {
                     imgLogo =
                         'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NS4wMyIgaGVpZ2h0PSIzNSIgdmlld0JveD0iMCAwIDI1NiAxOTkiPjxwYXRoIGQ9Ik00Ni41NCAxOTguMDExVjE4NC44NGMwLTUuMDUtMy4wNzQtOC4zNDItOC4zNDMtOC4zNDJjLTIuNjM0IDAtNS40ODguODc4LTcuNDY0IDMuNzMyYy0xLjUzNi0yLjQxNS0zLjczMS0zLjczMi03LjAyNC0zLjczMmMtMi4xOTYgMC00LjM5LjY1OC02LjE0NyAzLjA3M3YtMi42MzRoLTQuNjF2MjEuMDc0aDQuNjF2LTExLjYzNWMwLTMuNzMxIDEuOTc2LTUuNDg4IDUuMDUtNS40ODhjMy4wNzIgMCA0LjYxIDEuOTc2IDQuNjEgNS40ODh2MTEuNjM1aDQuNjF2LTExLjYzNWMwLTMuNzMxIDIuMTk0LTUuNDg4IDUuMDQ4LTUuNDg4YzMuMDc0IDAgNC42MSAxLjk3NiA0LjYxIDUuNDg4djExLjYzNXptNjguMjcxLTIxLjA3NGgtNy40NjN2LTYuMzY2aC00LjYxdjYuMzY2aC00LjE3MXY0LjE3aDQuMTd2OS42NmMwIDQuODMgMS45NzYgNy42ODMgNy4yNDUgNy42ODNjMS45NzYgMCA0LjE3LS42NTggNS43MDgtMS41MzZsLTEuMzE4LTMuOTUyYy0xLjMxNy44NzgtMi44NTMgMS4wOTgtMy45NTEgMS4wOThjLTIuMTk1IDAtMy4wNzMtMS4zMTctMy4wNzMtMy41MTN2LTkuNDRoNy40NjN6bTM5LjA3Ni0uNDRjLTIuNjM0IDAtNC4zOSAxLjMxOC01LjQ4OCAzLjA3NHYtMi42MzRoLTQuNjF2MjEuMDc0aDQuNjF2LTExLjg1NGMwLTMuNTEyIDEuNTM2LTUuNDg4IDQuMzktNS40ODhjLjg3OCAwIDEuOTc2LjIyIDIuODU0LjQzOWwxLjMxNy00LjM5Yy0uODc4LS4yMi0yLjE5NS0uMjItMy4wNzMtLjIybS01OS4wNTIgMi4xOTZjLTIuMTk2LTEuNTM3LTUuMjY5LTIuMTk1LTguNTYyLTIuMTk1Yy01LjI2OCAwLTguNzggMi42MzQtOC43OCA2LjgwNWMwIDMuNTEzIDIuNjM0IDUuNDg4IDcuMjQ0IDYuMTQ3bDIuMTk1LjIyYzIuNDE1LjQzOCAzLjczMiAxLjA5NyAzLjczMiAyLjE5NWMwIDEuNTM2LTEuNzU2IDIuNjM0LTQuODMgMi42MzRzLTUuNDg4LTEuMDk4LTcuMDI1LTIuMTk1bC0yLjE5NSAzLjUxMmMyLjQxNSAxLjc1NiA1LjcwOCAyLjYzNCA5IDIuNjM0YzYuMTQ3IDAgOS42Ni0yLjg1MyA5LjY2LTYuODA1YzAtMy43MzItMi44NTQtNS43MDgtNy4yNDUtNi4zNjZsLTIuMTk1LS4yMmMtMS45NzYtLjIyLTMuNTEyLS42NTgtMy41MTItMS45NzVjMC0xLjUzNyAxLjUzNi0yLjQxNSAzLjk1MS0yLjQxNWMyLjYzNSAwIDUuMjY5IDEuMDk3IDYuNTg2IDEuNzU2em0xMjIuNDk1LTIuMTk1Yy0yLjYzNSAwLTQuMzkxIDEuMzE3LTUuNDg5IDMuMDczdi0yLjYzNGgtNC42MXYyMS4wNzRoNC42MXYtMTEuODU0YzAtMy41MTIgMS41MzctNS40ODggNC4zOS01LjQ4OGMuODc5IDAgMS45NzcuMjIgMi44NTUuNDM5bDEuMzE3LTQuMzljLS44NzgtLjIyLTIuMTk1LS4yMi0zLjA3My0uMjJtLTU4LjgzMyAxMC45NzZjMCA2LjM2NiA0LjM5IDEwLjk3NiAxMS4xOTYgMTAuOTc2YzMuMDczIDAgNS4yNjgtLjY1OCA3LjQ2My0yLjQxNGwtMi4xOTUtMy43MzJjLTEuNzU2IDEuMzE3LTMuNTEyIDEuOTc1LTUuNDg4IDEuOTc1Yy0zLjczMiAwLTYuMzY2LTIuNjM0LTYuMzY2LTYuODA1YzAtMy45NTEgMi42MzQtNi41ODYgNi4zNjYtNi44MDVjMS45NzYgMCAzLjczMi42NTggNS40ODggMS45NzZsMi4xOTUtMy43MzJjLTIuMTk1LTEuNzU3LTQuMzktMi40MTUtNy40NjMtMi40MTVjLTYuODA2IDAtMTEuMTk2IDQuNjEtMTEuMTk2IDEwLjk3Nm00Mi41ODggMHYtMTAuNTM3aC00LjYxdjIuNjM0Yy0xLjUzNy0xLjk3NS0zLjczMi0zLjA3My02LjU4Ni0zLjA3M2MtNS45MjcgMC0xMC41MzcgNC42MS0xMC41MzcgMTAuOTc2czQuNjEgMTAuOTc2IDEwLjUzNyAxMC45NzZjMy4wNzMgMCA1LjI2OS0xLjA5NyA2LjU4Ni0zLjA3M3YyLjYzNGg0LjYxem0tMTYuOTA0IDBjMC0zLjczMiAyLjQxNS02LjgwNSA2LjM2Ni02LjgwNWMzLjczMiAwIDYuMzY3IDIuODU0IDYuMzY3IDYuODA1YzAgMy43MzItMi42MzUgNi44MDUtNi4zNjcgNi44MDVjLTMuOTUxLS4yMi02LjM2Ni0zLjA3My02LjM2Ni02LjgwNW0tNTUuMS0xMC45NzZjLTYuMTQ3IDAtMTAuNTM4IDQuMzktMTAuNTM4IDEwLjk3NnM0LjM5IDEwLjk3NiAxMC43NTcgMTAuOTc2YzMuMDczIDAgNi4xNDctLjg3OCA4LjU2Mi0yLjg1M2wtMi4xOTYtMy4yOTNjLTEuNzU2IDEuMzE3LTMuOTUxIDIuMTk1LTYuMTQ2IDIuMTk1Yy0yLjg1NCAwLTUuNzA4LTEuMzE3LTYuMzY3LTUuMDVoMTUuNTg3di0xLjc1NWMuMjItNi44MDYtMy43MzItMTEuMTk2LTkuNjYtMTEuMTk2bTAgMy45NTFjMi44NTMgMCA0LjgzIDEuNzU3IDUuMjY4IDUuMDVoLTEwLjk3NmMuNDM5LTIuODU0IDIuNDE1LTUuMDUgNS43MDgtNS4wNW0xMTQuMzcyIDcuMDI1di0xOC44NzloLTQuNjF2MTAuOTc2Yy0xLjUzNy0xLjk3NS0zLjczMi0zLjA3My02LjU4Ni0zLjA3M2MtNS45MjcgMC0xMC41MzcgNC42MS0xMC41MzcgMTAuOTc2czQuNjEgMTAuOTc2IDEwLjUzNyAxMC45NzZjMy4wNzQgMCA1LjI2OS0xLjA5NyA2LjU4Ni0zLjA3M3YyLjYzNGg0LjYxem0tMTYuOTAzIDBjMC0zLjczMiAyLjQxNC02LjgwNSA2LjM2Ni02LjgwNWMzLjczMiAwIDYuMzY2IDIuODU0IDYuMzY2IDYuODA1YzAgMy43MzItMi42MzQgNi44MDUtNi4zNjYgNi44MDVjLTMuOTUyLS4yMi02LjM2Ni0zLjA3My02LjM2Ni02LjgwNW0tMTU0LjEwNyAwdi0xMC41MzdoLTQuNjF2Mi42MzRjLTEuNTM3LTEuOTc1LTMuNzMyLTMuMDczLTYuNTg2LTMuMDczYy01LjkyNyAwLTEwLjUzNyA0LjYxLTEwLjUzNyAxMC45NzZzNC42MSAxMC45NzYgMTAuNTM3IDEwLjk3NmMzLjA3NCAwIDUuMjY5LTEuMDk3IDYuNTg2LTMuMDczdjIuNjM0aDQuNjF6bS0xNy4xMjMgMGMwLTMuNzMyIDIuNDE1LTYuODA1IDYuMzY2LTYuODA1YzMuNzMyIDAgNi4zNjcgMi44NTQgNi4zNjcgNi44MDVjMCAzLjczMi0yLjYzNSA2LjgwNS02LjM2NyA2LjgwNWMtMy45NTEtLjIyLTYuMzY2LTMuMDczLTYuMzY2LTYuODA1Ii8+PHBhdGggZmlsbD0iI2ZmNWYwMCIgZD0iTTkzLjI5OCAxNi45MDNoNjkuMTV2MTI0LjI1MWgtNjkuMTV6Ii8+PHBhdGggZmlsbD0iI2ViMDAxYiIgZD0iTTk3LjY4OSA3OS4wMjljMC0yNS4yNDUgMTEuODU0LTQ3LjYzNyAzMC4wNzQtNjIuMTI2QzExNC4zNzMgNi4zNjYgOTcuNDcgMCA3OS4wMyAwQzM1LjM0MyAwIDAgMzUuMzQzIDAgNzkuMDI5czM1LjM0MyA3OS4wMjkgNzkuMDI5IDc5LjAyOWMxOC40NCAwIDM1LjM0My02LjM2NiA0OC43MzQtMTYuOTA0Yy0xOC4yMi0xNC4yNjktMzAuMDc0LTM2Ljg4LTMwLjA3NC02Mi4xMjUiLz48cGF0aCBmaWxsPSIjZjc5ZTFiIiBkPSJNMjU1Ljc0NiA3OS4wMjljMCA0My42ODUtMzUuMzQzIDc5LjAyOS03OS4wMjkgNzkuMDI5Yy0xOC40NCAwLTM1LjM0My02LjM2Ni00OC43MzQtMTYuOTA0YzE4LjQ0LTE0LjQ4OCAzMC4wNzUtMzYuODggMzAuMDc1LTYyLjEyNXMtMTEuODU1LTQ3LjYzNy0zMC4wNzUtNjIuMTI2QzE0MS4zNzMgNi4zNjYgMTU4LjI3NyAwIDE3Ni43MTcgMGM0My42ODYgMCA3OS4wMyAzNS41NjMgNzkuMDMgNzkuMDI5Ii8+PC9zdmc+';
                     cardTypeName.innerHTML = 'Mastercard® Virtual';
@@ -406,10 +423,10 @@
         if (cardTypeSelect) {
             cardTypeSelect.addEventListener('change', generateCardNumber);
         }
-        // // Call on page load to set initial state
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     generateCardNumber();
-        // });
+        // Call on page load to set initial state
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCardNumber();
+        });
 
 
         // Spending limit + Purpose logic
